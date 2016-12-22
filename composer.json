@@ -1,0 +1,33 @@
+{
+  "name": "houdunwang/cli",
+  "description": "命令行控制指令",
+  "type": "project",
+  "keywords": [
+    "houdunwang",
+    "hdphp",
+    "后盾网",
+    "后盾人",
+    "向军老师",
+    "命令行"
+  ],
+  "homepage": "http://www.houdunwang.com/",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "后盾网向军",
+      "email": "2300071698@qq.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "files": [
+
+    ],
+    "psr-4": {
+      "houdunwang\\cli\\": "src"
+    }
+  }
+}
