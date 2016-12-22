@@ -11,8 +11,15 @@ class Cli {
 	public $binds = [ ];
 
 	public function __construct() {
+		defined( 'IS_CLI' ) or define( 'IS_CLI', PHP_SAPI == 'cli' );
 	}
 
+	/**
+	 * 绑定命令
+	 *
+	 * @param string $name 命令标识
+	 * @param \Closure $callback 闭包函数
+	 */
 	public function bind( $name, \Closure $callback ) {
 		$this->binds[ $name ] = $callback;
 	}
