@@ -24,7 +24,7 @@
   },
   "autoload": {
     "files": [
-
+      "src/kernel/helper.php"
     ],
     "psr-4": {
       "houdunwang\\cli\\": "src"

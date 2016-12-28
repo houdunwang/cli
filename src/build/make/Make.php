@@ -7,10 +7,11 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.hdphp.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
-namespace houdunwang\cli\make;
-use houdunwang\cli\Cli;
+namespace houdunwang\cli\build\make;
 
-class Make extends Cli {
+use houdunwang\cli\build\Base;
+
+class Make extends Base {
 	//创建控制器
 	public function controller( $arg, $type = 'controller' ) {
 		$info       = explode( '.', $arg );
@@ -124,7 +125,7 @@ class Make extends Cli {
 
 	//创建中间件
 	public function service( $name ) {
-		$name = ucfirst($name);
+		$name  = ucfirst( $name );
 		$files = [
 			__DIR__ . '/view/service/HdForm.tpl',
 			__DIR__ . '/view/service/HdFormFacade.tpl',

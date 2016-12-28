@@ -8,9 +8,10 @@
  * | Copyright (c) 2012-2019, www.hdphp.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
 namespace houdunwang\cli\table;
-use houdunwang\cli\Cli;
 
-class Table extends Cli {
+use houdunwang\cli\build\Base;
+
+class Table extends Base {
 	//创建缓存表
 	public function cache() {
 		$table = c( 'database.prefix' ) . c( 'cache.mysql.table' );

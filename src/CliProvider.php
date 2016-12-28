@@ -17,6 +17,10 @@ class CliProvider extends ServiceProvider {
 	public $defer = true;
 
 	public function boot() {
+		//命令行模式
+		if ( PHP_SAPI == 'cli' ) {
+			\Cli::bootstrap();
+		}
 	}
 
 	public function register() {
