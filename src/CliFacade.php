@@ -9,9 +9,10 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\cli;
 
-use hdphp\kernel\ServiceFacade;
 
-class CliFacade extends ServiceFacade {
+use houdunwang\framework\build\Facade;
+
+class CliFacade extends Facade {
 	public static function getFacadeAccessor() {
 		return 'Cli';
 	}

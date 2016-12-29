@@ -9,12 +9,11 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\cli;
 
-use hdphp\kernel\ServiceProvider;
+use houdunwang\framework\build\Provider;
 
-class CliProvider extends ServiceProvider {
-
+class CliProvider extends Provider {
 	//延迟加载
-	public $defer = true;
+	public $defer = false;
 
 	public function boot() {
 		//命令行模式
@@ -24,8 +23,8 @@ class CliProvider extends ServiceProvider {
 	}
 
 	public function register() {
-		$this->app->single( 'Cli', function ( $app ) {
-			return new Cli( $app );
-		});
+		$this->app->single( 'Cli', function () {
+			return new Cli();
+		} );
 	}
 }

@@ -132,7 +132,7 @@ class Make extends Base {
 			__DIR__ . '/view/service/HdFormProvider.tpl',
 		];
 		//创建目录
-		$dir = 'system/service/' . $name;
+		$dir = 'system/aaaaa/' . $name;
 		Dir::create( $dir );
 		foreach ( $files as $f ) {
 			$content = str_replace( '{{NAME}}', $name, file_get_contents( $f ) );

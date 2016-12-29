@@ -32,9 +32,7 @@ class Cli {
 	}
 
 	public static function __callStatic( $name, $arguments ) {
-
-
-		return call_user_func_array( [ $link, $name ], $arguments );
+		return call_user_func_array( [ static::single(), $name ], $arguments );
 	}
 }
 

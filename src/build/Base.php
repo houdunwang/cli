@@ -10,10 +10,6 @@ class Base {
 	//绑定命令
 	public $binds = [ ];
 
-	public function __construct() {
-		defined( 'IS_CLI' ) or define( 'IS_CLI', PHP_SAPI == 'cli' );
-	}
-
 	/**
 	 * 绑定命令
 	 *
@@ -26,9 +22,6 @@ class Base {
 
 	//运行
 	public function bootstrap() {
-		if ( ! IS_CLI ) {
-			return;
-		}
 		//去掉hd
 		array_shift( $_SERVER['argv'] );
 		$info = explode( ':', array_shift( $_SERVER['argv'] ) );
