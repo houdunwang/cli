@@ -9,6 +9,7 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\cli;
 
+use houdunwang\cli\build\Cli;
 use houdunwang\framework\build\Provider;
 
 class CliProvider extends Provider {
@@ -16,10 +17,6 @@ class CliProvider extends Provider {
 	public $defer = false;
 
 	public function boot() {
-		//命令行模式
-		if ( PHP_SAPI == 'cli' ) {
-			\Cli::bootstrap();
-		}
 	}
 
 	public function register() {

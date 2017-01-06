@@ -22,6 +22,9 @@ class Base {
 
 	//运行
 	public function bootstrap() {
+		if ( PHP_SAPI != 'cli' ) {
+			return;
+		}
 		//去掉hd
 		array_shift( $_SERVER['argv'] );
 		$info = explode( ':', array_shift( $_SERVER['argv'] ) );
@@ -37,6 +40,7 @@ class Base {
 		if ( class_exists( $class ) ) {
 			$instance = new $class();
 			call_user_func_array( [ $instance, $action ], $_SERVER['argv'] );
+			exit;
 		} else {
 			$this->error( 'Command does not exist' );
 		}

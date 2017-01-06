@@ -1,6 +1,5 @@
 <?php namespace system\tag;
-
-use hdphp\view\TagBase;
+use houdunwang\view\build\TagBase;
 
 class {{NAME}} extends TagBase {
 	/**
@@ -10,7 +9,7 @@ class {{NAME}} extends TagBase {
 	public $tags = [
 			'line' => [ 'block' => false ],
 			'tag'  => [ 'block' => true, 'level' => 4 ],
-		];
+	];
 	//line 标签
 	public function _line( $attr, $content, &$view ) {
 		return 'link标签 测试内容';

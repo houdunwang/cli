@@ -12,14 +12,10 @@ namespace houdunwang\cli\build\migrate;
 use houdunwang\cli\build\Base;
 
 class Migrate extends Base {
+	//当前执行的数据库中的编号
 	protected static $batch;
 
 	public function __construct() {
-		//创建migration表用于记录动作
-		if ( ! Schema::tableExists( 'migrations' ) ) {
-			$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
-			Db::execute( $sql );
-		}
 		if ( empty( self::$batch ) ) {
 			self::$batch = Db::table( 'migrations' )->max( 'batch' ) ?: 0;
 		}
@@ -34,7 +30,7 @@ class Migrate extends Base {
 			//只执行没有执行过的migration
 			if ( ! Db::table( 'migrations' )->where( 'migration', $name )->first() ) {
 				require $file;
-				$class = substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
 				( new $class )->up();
 				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => ++ self::$batch ] );
 			}
@@ -49,7 +45,7 @@ class Migrate extends Base {
 			$file = ROOT_PATH . '/system/database/migrations/' . $f . '.php';
 			if ( is_file( $file ) ) {
 				require $file;
-				$class = substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
 				( new $class )->down();
 				Db::table( 'migrations' )->where( 'migration', $f )->delete();
 			}
@@ -63,7 +59,7 @@ class Migrate extends Base {
 			$file = ROOT_PATH . '/system/database/migrations/' . $f . '.php';
 			if ( is_file( $file ) ) {
 				require $file;
-				$class = substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
 				( new $class )->down();
 			}
 			Db::table( 'migrations' )->where( 'migration', $f )->delete();

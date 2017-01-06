@@ -23,9 +23,7 @@
     "php": ">=5.4.0"
   },
   "autoload": {
-    "files": [
-      "src/helper.php"
-    ],
+    "files": [],
     "psr-4": {
       "houdunwang\\cli\\": "src"
     }

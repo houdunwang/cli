@@ -61,6 +61,12 @@ class Make extends Base {
 				$this->error( "File already exists" );
 			}
 		}
+		//创建migration表用于记录动作
+		if ( ! Schema::tableExists( 'migrations' ) ) {
+			$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
+			Db::execute( $sql );
+		}
+
 		$file = ROOT_PATH . '/system/database/migrations/' . date( 'Y_m_d' ) . '_' . substr( time(), - 6 ) . '_' . $name . '.php';
 		if ( $info[0] == '--create' ) {
 			//创建模型文件
@@ -117,7 +123,7 @@ class Make extends Base {
 
 	//创建应用密钥
 	public function key() {
-		$key     = md5( mt_rand( 1, 99999 ) . NOW ) . md5( mt_rand( 1, 99999 ) . NOW );
+		$key     = md5( mt_rand( 1, 99999 ) . time() ) . md5( mt_rand( 1, 99999 ) . time() );
 		$content = file_get_contents( 'system/config/app.php' );
 		$content = preg_replace( '/(.*("|\')\s*key\s*\2\s*=>\s*)(.*)/im', "\\1'$key',", $content );
 		file_put_contents( 'system/config/app.php', $content );
@@ -132,7 +138,7 @@ class Make extends Base {
 			__DIR__ . '/view/service/HdFormProvider.tpl',
 		];
 		//创建目录
-		$dir = 'system/aaaaa/' . $name;
+		$dir = 'system/service/' . $name;
 		Dir::create( $dir );
 		foreach ( $files as $f ) {
 			$content = str_replace( '{{NAME}}', $name, file_get_contents( $f ) );

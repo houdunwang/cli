@@ -34,7 +34,7 @@ class Seed extends Base {
 			//只执行没有执行过的migration
 			if ( ! Db::table( 'seeds' )->where( 'seed', $name )->first() ) {
 				require $file;
-				$class = substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\seeds\\'.substr( basename( $file ), 18, - 4 );
 				( new $class )->up();
 				Db::table( 'seeds' )->insert( [ 'seed' => $name, 'batch' => ++ self::$batch ] );
 			}
@@ -48,7 +48,7 @@ class Seed extends Base {
 			$file = ROOT_PATH . '/system/database/seeds/' . $f . '.php';
 			if ( is_file( $file ) ) {
 				require $file;
-				$class = substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\seeds\\'.substr( basename( $file ), 18, - 4 );
 				( new $class )->down();
 			}
 			Db::table( 'seeds' )->where( 'seed', $f )->delete();
@@ -63,7 +63,7 @@ class Seed extends Base {
 			$file = ROOT_PATH . '/system/database/seeds/' . $f . '.php';
 			if ( is_file( $file ) ) {
 				require $file;
-				$class = substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\seeds\\'.substr( basename( $file ), 18, - 4 );
 				( new $class )->down();
 			}
 			Db::table( 'seeds' )->where( 'seed', $f )->delete();

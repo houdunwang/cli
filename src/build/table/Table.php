@@ -7,7 +7,7 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.hdphp.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
-namespace houdunwang\cli\table;
+namespace houdunwang\cli\build\table;
 
 use houdunwang\cli\build\Base;
 

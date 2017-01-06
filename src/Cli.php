@@ -1,4 +1,6 @@
-<?php namespace houdunwang\cli\build;
+<?php namespace houdunwang\cli;
+use houdunwang\cli\build\Base;
+
 /**
  * 命令行模式
  * Class Cli
