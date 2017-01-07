@@ -141,7 +141,8 @@ class Make extends Base {
 		$dir = strtolower('system/service/' . $name);
 		Dir::create( $dir );
 		foreach ( $files as $f ) {
-			$content = str_replace( '{{NAME}}', $name, file_get_contents( $f ) );
+			$content = str_replace( '{{LOWER_NAME}}', strtolower($name), file_get_contents( $f ) );
+			$content = str_replace( '{{NAME}}', $name, $content);
 			if ( strpos( $f, 'Facade' ) !== false ) {
 				file_put_contents( $dir . "/{$name}Facade.php", $content );
 			} else if ( strpos( $f, 'Provider' ) !== false ) {

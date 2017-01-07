@@ -1,4 +1,4 @@
-<?php namespace system\service\{{NAME}};
+<?php namespace system\service\{{LOWER_NAME}};
 /** .-------------------------------------------------------------------
 * |  Software: [HDPHP framework]
 * |      Site: www.hdphp.com
