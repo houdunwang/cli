@@ -56,5 +56,3 @@ class Base {
 		die( PHP_EOL . "\033[;32m $content \x1B[0m" . PHP_EOL );
 	}
 }
-
-

@@ -130,7 +130,7 @@ class Make extends Base {
 	}
 
 	//创建中间件
-	public function service( $name ) {
+	public function service( $name ) {echo $name;
 		$name  = ucfirst( $name );
 		$files = [
 			__DIR__ . '/view/service/HdForm.tpl',
@@ -138,7 +138,7 @@ class Make extends Base {
 			__DIR__ . '/view/service/HdFormProvider.tpl',
 		];
 		//创建目录
-		$dir = 'system/service/' . $name;
+		$dir = strtolower('system/service/' . $name);
 		Dir::create( $dir );
 		foreach ( $files as $f ) {
 			$content = str_replace( '{{NAME}}', $name, file_get_contents( $f ) );
