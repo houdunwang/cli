@@ -32,7 +32,7 @@ class Migrate extends Base {
 				require $file;
 				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
 				( new $class )->up();
-				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => ++ self::$batch ] );
+				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => self::$batch+1 ] );
 			}
 		}
 	}
