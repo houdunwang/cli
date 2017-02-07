@@ -10,6 +10,11 @@ class Base {
 	//绑定命令
 	public $binds = [ ];
 
+	public function __construct() {
+		//加载扩展命令处理类
+		$this->binds = array_merge( $this->binds, include 'system/config/cli.php' );
+	}
+
 	/**
 	 * 绑定命令
 	 *
@@ -32,13 +37,13 @@ class Base {
 		//去掉hd
 		array_shift( $_SERVER['argv'] );
 		$info = explode( ':', array_shift( $_SERVER['argv'] ) );
-		//执行用户绑定的动作
+		//执行用户绑定的命令处理类
 		if ( isset( $this->binds[ $info[0] ] ) ) {
-			array_unshift( $_SERVER['argv'], $this );
-			call_user_func_array( $this->binds[ $info[0] ], $_SERVER['argv'] );
+			$class = $this->binds[ $info[0] ];
+		} else {
+			//系统命令类
+			$class = 'houdunwang\cli\\build\\' . strtolower( $info[0] ) . '\\' . ucfirst( $info[0] );
 		}
-		//命令类
-		$class  = 'houdunwang\cli\\build\\' . strtolower( $info[0] ) . '\\' . ucfirst( $info[0] );
 		$action = isset( $info[1] ) ? $info[1] : 'run';
 		//实例
 		if ( class_exists( $class ) ) {
