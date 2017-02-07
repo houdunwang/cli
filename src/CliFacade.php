@@ -9,7 +9,6 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\cli;
 
-
 use houdunwang\framework\build\Facade;
 
 class CliFacade extends Facade {

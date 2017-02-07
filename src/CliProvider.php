@@ -9,7 +9,6 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\cli;
 
-use houdunwang\cli\build\Cli;
 use houdunwang\framework\build\Provider;
 
 class CliProvider extends Provider {

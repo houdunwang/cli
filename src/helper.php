@@ -1,6 +1,7 @@
 <?php
 function cli( $cli ) {
-	$args = preg_split( '/\s+/', $cli );
-	$args = array_unshift( $args, 'hd' );
-	p( $args );
+	$_SERVER['argv'] = preg_split( '/\s+/', $cli );
+	p($_SERVER['argv']);
+	//执行命令行指令
+	\Cli::bootstrap(true);
 }

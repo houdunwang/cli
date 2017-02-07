@@ -22,10 +22,11 @@ class Base {
 
 	/**
 	 * 执行命令运行
+	 *
 	 * @param bool $force 强制执行,用于函数方式调用
 	 */
-	public function bootstrap($force = false) {
-		if ( PHP_SAPI != 'cli' || $force) {
+	public function bootstrap( $force = false ) {
+		if ( PHP_SAPI != 'cli' && $force === false ) {
 			return;
 		}
 		//去掉hd
@@ -43,7 +44,10 @@ class Base {
 		if ( class_exists( $class ) ) {
 			$instance = new $class();
 			call_user_func_array( [ $instance, $action ], $_SERVER['argv'] );
-			exit;
+			//命令行执行时结束后续代码运行
+			if ( PHP_SAPI == 'cli' ) {
+				exit;
+			}
 		} else {
 			$this->error( 'Command does not exist' );
 		}
