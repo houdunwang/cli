@@ -30,9 +30,9 @@ class Migrate extends Base {
 			//只执行没有执行过的migration
 			if ( ! Db::table( 'migrations' )->where( 'migration', $name )->first() ) {
 				require $file;
-				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, - 20 );
 				( new $class )->up();
-				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => self::$batch+1 ] );
+				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => self::$batch + 1 ] );
 			}
 		}
 	}
