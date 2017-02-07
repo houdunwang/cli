@@ -36,7 +36,7 @@ class Seed extends Base {
 				require $file;
 				$class = 'system\database\seeds\\'.substr( basename( $file ), 18, - 4 );
 				( new $class )->up();
-				Db::table( 'seeds' )->insert( [ 'seed' => $name, 'batch' => ++ self::$batch ] );
+				Db::table( 'seeds' )->insert( [ 'seed' => $name, 'batch' => self::$batch+1 ] );
 			}
 		}
 	}
