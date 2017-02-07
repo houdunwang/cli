@@ -20,9 +20,12 @@ class Base {
 		$this->binds[ $name ] = $callback;
 	}
 
-	//运行
-	public function bootstrap() {
-		if ( PHP_SAPI != 'cli' ) {
+	/**
+	 * 执行命令运行
+	 * @param bool $force 强制执行,用于函数方式调用
+	 */
+	public function bootstrap($force = false) {
+		if ( PHP_SAPI != 'cli' || $force) {
 			return;
 		}
 		//去掉hd
