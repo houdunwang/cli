@@ -30,11 +30,11 @@ class Seed extends Base {
 		$files = glob( ROOT_PATH . '/system/database/seeds/*.php' );
 		sort( $files );
 		foreach ( (array) $files as $file ) {
-			$name = substr( basename( $file ), 0, - 4 );
+			$name = substr( basename( $file ), 0, -24 );
 			//只执行没有执行过的migration
 			if ( ! Db::table( 'seeds' )->where( 'seed', $name )->first() ) {
 				require $file;
-				$class = 'system\database\seeds\\' . substr( basename( $file ), 0, - 20 );
+				$class = 'system\database\seeds\\' . substr( basename( $file ), 0, -24 );
 				( new $class )->up();
 				Db::table( 'seeds' )->insert( [ 'seed' => $name, 'batch' => self::$batch + 1 ] );
 			}

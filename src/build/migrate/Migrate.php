@@ -16,6 +16,11 @@ class Migrate extends Base {
 	protected static $batch;
 
 	public function __construct() {
+		if ( ! Schema::tableExists( 'migrations' ) ) {
+			$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
+			Db::execute( $sql );
+		}
+
 		if ( empty( self::$batch ) ) {
 			self::$batch = Db::table( 'migrations' )->max( 'batch' ) ?: 0;
 		}
@@ -26,11 +31,11 @@ class Migrate extends Base {
 		$files = glob( ROOT_PATH . '/system/database/migrations/*.php' );
 		sort( $files );
 		foreach ( (array) $files as $file ) {
-			$name = substr( basename( $file ), 0, - 4 );
+			$name = substr( basename( $file ), 0, -24);
 			//只执行没有执行过的migration
 			if ( ! Db::table( 'migrations' )->where( 'migration', $name )->first() ) {
 				require $file;
-				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, - 20 );
+				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, -24 );
 				( new $class )->up();
 				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => self::$batch + 1 ] );
 			}

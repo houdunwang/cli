@@ -62,10 +62,10 @@ class Make extends Base {
 //			}
 //		}
 		//创建migration表用于记录动作
-		if ( ! Schema::tableExists( 'migrations' ) ) {
-			$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
-			Db::execute( $sql );
-		}
+		// if ( ! Schema::tableExists( 'migrations' ) ) {
+		// 	$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
+		// 	Db::execute( $sql );
+		// }
 
 		$file = ROOT_PATH . '/system/database/migrations/' . $name . '_' . date( 'Ymd' ) . '_' . time() . '.php';
 		if ( $info[0] == '--create' ) {
