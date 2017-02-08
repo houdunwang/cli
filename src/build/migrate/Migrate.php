@@ -33,11 +33,11 @@ class Migrate extends Base {
 		foreach ( (array) $files as $file ) {
 			$name = substr( basename( $file ), 0, -24);
 			//只执行没有执行过的migration
-			if ( ! Db::table( 'migrations' )->where( 'migration', $name )->first() ) {
+			if ( ! Db::table( 'migrations' )->where( 'migration', basename($file) )->first() ) {
 				require $file;
-				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, -24 );
+				$class = 'system\database\migrations\\' . $name;
 				( new $class )->up();
-				Db::table( 'migrations' )->insert( [ 'migration' => $name, 'batch' => self::$batch + 1 ] );
+				Db::table( 'migrations' )->insert( [ 'migration' => basename($file), 'batch' => self::$batch + 1 ] );
 			}
 		}
 	}

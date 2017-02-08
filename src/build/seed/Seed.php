@@ -32,11 +32,11 @@ class Seed extends Base {
 		foreach ( (array) $files as $file ) {
 			$name = substr( basename( $file ), 0, -24 );
 			//只执行没有执行过的migration
-			if ( ! Db::table( 'seeds' )->where( 'seed', $name )->first() ) {
+			if ( ! Db::table( 'seeds' )->where( 'seed', basename($file) )->first() ) {
 				require $file;
-				$class = 'system\database\seeds\\' . substr( basename( $file ), 0, -24 );
+				$class = 'system\database\seeds\\' . $name;
 				( new $class )->up();
-				Db::table( 'seeds' )->insert( [ 'seed' => $name, 'batch' => self::$batch + 1 ] );
+				Db::table( 'seeds' )->insert( [ 'seed' => basename($file), 'batch' => self::$batch + 1 ] );
 			}
 		}
 	}
