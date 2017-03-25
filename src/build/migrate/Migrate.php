@@ -47,10 +47,10 @@ class Migrate extends Base {
 		$batch = Db::table( 'migrations' )->max( 'batch' );
 		$files = Db::table( 'migrations' )->where( 'batch', $batch )->lists( 'migration' );
 		foreach ( (array) $files as $f ) {
-			$file = ROOT_PATH . '/system/database/migrations/' . $f . '.php';
+			$file = ROOT_PATH . '/system/database/migrations/' . $f;
 			if ( is_file( $file ) ) {
 				require $file;
-				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
+				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, - 24 );
 				( new $class )->down();
 				Db::table( 'migrations' )->where( 'migration', $f )->delete();
 			}
