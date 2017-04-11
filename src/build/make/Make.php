@@ -7,6 +7,7 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.hdphp.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
+
 namespace houdunwang\cli\build\make;
 
 use houdunwang\cli\build\Base;
@@ -55,17 +56,15 @@ class Make extends Base {
 	//创建数据迁移
 	public function migration( $name, $arg ) {
 		$info = explode( '=', $arg );
-//		//检测文件是否存在,也检测类名
-//		foreach ( glob( ROOT_PATH . '/system/database/migrations/*.php' ) as $f ) {
-//			if ( substr( basename( $f ), 0, strlen($name) ) == $name ) {
-//				$this->error( "File already exists" );
-//			}
-//		}
-		//创建migration表用于记录动作
-		// if ( ! Schema::tableExists( 'migrations' ) ) {
-		// 	$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
-		// 	Db::execute( $sql );
-		// }
+		//检查数据迁移文件是否已经存在
+		$files = glob( ROOT_PATH . '/system/database/migrations/*.php' );
+		foreach ( (array) $files as $file ) {
+			$fileInfo     = pathinfo( $file );
+			$basename = strtolower( substr( $fileInfo['basename'], 0, strlen( $name ) ) );
+			if ( $basename == strtolower( $name ) ) {
+				$this->error( 'File already exists' );
+			}
+		}
 
 		$file = ROOT_PATH . '/system/database/migrations/' . $name . '_' . date( 'Ymd' ) . '_' . time() . '.php';
 		if ( $info[0] == '--create' ) {
@@ -84,12 +83,16 @@ class Make extends Base {
 
 	//创建数据迁移
 	public function seed( $name ) {
-//		//检测文件是否存在,也检测类名
-//		foreach ( glob( ROOT_PATH . '/system/database/seeds/*.php' ) as $f ) {
-//			if ( substr( basename( $f ), 18, - 4 ) == $name ) {
-//				$this->error( "File already exists" );
-//			}
-//		}
+		//检测文件是否存在,也检测类名
+		$files = glob( ROOT_PATH . '/system/database/seeds/*.php' );
+		foreach ( (array) $files as $file ) {
+			$fileInfo     = pathinfo( $file );
+			$basename = strtolower( substr( $fileInfo['basename'], 0, strlen( $name ) ) );
+			if ( $basename == strtolower( $name ) ) {
+				$this->error( 'File already exists' );
+			}
+		}
+
 		$file = ROOT_PATH . '/system/database/seeds/' . $name . '_' . date( 'Ymd' ) . '_' . time() . '.php';
 		//创建文件
 		$data = file_get_contents( __DIR__ . '/view/seeder.tpl' );

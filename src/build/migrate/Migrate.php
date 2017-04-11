@@ -52,8 +52,8 @@ class Migrate extends Base {
 				require $file;
 				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, - 24 );
 				( new $class )->down();
-				Db::table( 'migrations' )->where( 'migration', $f )->delete();
 			}
+			Db::table( 'migrations' )->where( 'migration', $f )->delete();
 		}
 	}
 
