@@ -1,39 +1,46 @@
 <?php namespace houdunwang\cli;
+
 use houdunwang\cli\build\Base;
 
 /**
  * 命令行模式
  * Class Cli
+ *
  * @package hdphp\cli
- * @author 向军 <2300071698@qq.com>
+ * @author  向军 <2300071698@qq.com>
  */
-class Cli {
-	protected $link;
+class Cli
+{
+    protected $link;
 
-	protected function driver() {
-		$this->link = new Base();
+    protected function driver()
+    {
+        $this->link = new Base();
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function __call( $method, $params ) {
-		if ( is_null( $this->link ) ) {
-			$this->driver();
-		}
+    public function __call($method, $params)
+    {
+        if (is_null($this->link)) {
+            $this->driver();
+        }
 
-		return call_user_func_array( [ $this->link, $method ], $params );
-	}
+        return call_user_func_array([$this->link, $method], $params);
+    }
 
-	public static function single() {
-		static $link;
-		if ( is_null( $link ) ) {
-			$link = new static();
-		}
+    public static function single()
+    {
+        static $link;
+        if (is_null($link)) {
+            $link = new static();
+        }
 
-		return $link;
-	}
+        return $link;
+    }
 
-	public static function __callStatic( $name, $arguments ) {
-		return call_user_func_array( [ static::single(), $name ], $arguments );
-	}
+    public static function __callStatic($name, $arguments)
+    {
+        return call_user_func_array([static::single(), $name], $arguments);
+    }
 }
