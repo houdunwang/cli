@@ -12,36 +12,12 @@ class Base
     //绑定命令
     public $binds = [];
 
-    public function __construct()
-    {
-        //加载扩展命令处理类
-        $this->binds = array_merge(
-            $this->binds,
-            include 'system/config/cli.php'
-        );
-    }
-
-    /**
-     * 绑定命令
-     *
-     * @param string   $name     命令标识
-     * @param \Closure $callback 闭包函数
-     */
-    public function bind($name, \Closure $callback)
-    {
-        $this->binds[$name] = $callback;
-    }
-
     /**
      * 执行命令运行
-     *
-     * @param bool $force 强制执行,用于函数方式调用
      */
-    public function bootstrap($force = false)
+    public function bootstrap()
     {
-        if (PHP_SAPI != 'cli' && $force === false) {
-            return;
-        }
+        $this->Initialize();
         //去掉hd
         array_shift($_SERVER['argv']);
         $info = explode(':', array_shift($_SERVER['argv']));
@@ -65,6 +41,29 @@ class Base
         } else {
             $this->error('Command does not exist');
         }
+    }
+
+    /**
+     * 初始化
+     */
+    public function Initialize()
+    {
+        //加载扩展命令处理类
+        $this->binds = array_merge(
+            $this->binds,
+            include 'system/config/cli.php'
+        );
+    }
+
+    /**
+     * 绑定命令
+     *
+     * @param string   $name     命令标识
+     * @param \Closure $callback 闭包函数
+     */
+    public function bind($name, \Closure $callback)
+    {
+        $this->binds[$name] = $callback;
     }
 
     //输出错误信息

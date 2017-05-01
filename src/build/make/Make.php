@@ -11,6 +11,7 @@
 namespace houdunwang\cli\build\make;
 
 use houdunwang\cli\build\Base;
+use houdunwang\loader\Loader;
 
 class Make extends Base
 {
@@ -20,9 +21,9 @@ class Make extends Base
         $info       = explode('.', $arg);
         $MODULE     = $info[0];
         $CONTROLLER = ucfirst($info[1]);
-        $file       = ROOT_PATH.'/app/'.$MODULE.'/controller/'.ucfirst(
-                $CONTROLLER
-            ).'.php';
+        $dir        = ROOT_PATH.'/app/'.$MODULE.'/controller/';
+        \Dir::create($dir);
+        $file = $dir.ucfirst($CONTROLLER).'.php';
         //判断目录
         if ( ! is_dir(ROOT_PATH.'/app/'.$MODULE.'/controller')) {
             $this->error("Directory does not exist\n");
@@ -171,7 +172,6 @@ class Make extends Base
     //创建中间件
     public function service($name)
     {
-        echo $name;
         $name  = ucfirst($name);
         $files = [
             __DIR__.'/view/service/HdForm.tpl',
@@ -196,5 +196,52 @@ class Make extends Base
                 file_put_contents($dir."/{$name}.php", $content);
             }
         }
+    }
+
+    /**
+     * 创建单元测试文件
+     *
+     * @param  string $name 类名称
+     * @param string  $type 测试类型
+     */
+    public function test($name, $type = '--feature')
+    {
+        switch ($type) {
+            case '--feature':
+                $file = 'tests/feature/'.$name.'.php';
+                break;
+            case '--unit':
+                $file = 'tests/unit/'.$name.'.php';
+                break;
+            default:
+                $this->error('params is wrong');
+        }
+        if (is_file($file)) {
+            $this->error('Files is Exists');
+        }
+        $content = file_get_contents(__DIR__.'/view/test.tpl');
+        $content = str_replace(
+            ['{{MODE}}', '{{NAME}}'],
+            [trim($type, '--'), $name],
+            $content
+        );
+        file_put_contents($file, $content);
+        $this->success('File is Create Success');
+    }
+
+    public function request($name)
+    {
+        $file = 'system/request/'.$name.'.php';
+        if (is_file($file)) {
+            $this->error('Files is Exists');
+        }
+        $content = file_get_contents(__DIR__.'/view/request.tpl');
+        $content = str_replace(
+            ['{{NAME}}'],
+            [$name],
+            $content
+        );
+        file_put_contents($file, $content);
+        $this->success('File is Create Success');
     }
 }
