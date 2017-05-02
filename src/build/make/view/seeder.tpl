@@ -1,5 +1,6 @@
-<?php namespace system\database\seeds;
+<?php namespace {{NAMESPACE}};
 use houdunwang\database\build\Seeder;
+use houdunwang\db\Db;
 class {{className}} extends Seeder {
     //执行
 	public function up() {

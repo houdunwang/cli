@@ -11,13 +11,32 @@ class Base
 {
     //绑定命令
     public $binds = [];
+    protected static $path
+        = [
+            'controller' => 'app/controller',
+            'middleware' => 'app/middleware',
+            'migration'  => 'app/migration',
+            'model'      => 'app/model',
+            'request'    => 'app/request',
+            'seed'       => 'app/seed',
+            'service'    => 'app/service',
+            'tag'        => 'app/tag',
+            'test'       => 'tests',
+        ];
+
+    /**
+     * @param array $path
+     */
+    public static function setPath($path)
+    {
+        self::$path = $path;
+    }
 
     /**
      * 执行命令运行
      */
     public function bootstrap()
     {
-        $this->Initialize();
         //去掉hd
         array_shift($_SERVER['argv']);
         $info = explode(':', array_shift($_SERVER['argv']));
@@ -32,26 +51,23 @@ class Base
         $action = isset($info[1]) ? $info[1] : 'run';
         //实例
         if (class_exists($class)) {
-            $instance = new $class();
-            call_user_func_array([$instance, $action], $_SERVER['argv']);
-            //命令行执行时结束后续代码运行
-            if (PHP_SAPI == 'cli') {
-                exit;
-            }
+            call_user_func_array([new $class(), $action], $_SERVER['argv']);
         } else {
             $this->error('Command does not exist');
         }
     }
 
     /**
-     * 初始化
+     * 绑定命令
+     *
+     * @param array $binds
      */
-    public function Initialize()
+    public function setBinds($binds)
     {
         //加载扩展命令处理类
         $this->binds = array_merge(
             $this->binds,
-            include 'system/config/cli.php'
+            $binds
         );
     }
 

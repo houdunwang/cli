@@ -7,67 +7,87 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.hdphp.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
+
 namespace houdunwang\cli\build\migrate;
 
 use houdunwang\cli\build\Base;
+use houdunwang\config\Config;
+use houdunwang\database\Schema;
+use houdunwang\db\Db;
 
-class Migrate extends Base {
-	//当前执行的数据库中的编号
-	protected static $batch;
+class Migrate extends Base
+{
+    protected $namespace;
+    //当前执行的数据库中的编号
+    protected static $batch;
 
-	public function __construct() {
-		if ( ! Schema::tableExists( 'migrations' ) ) {
-			$sql = "CREATE TABLE " . c( 'database.prefix' ) . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
-			Db::execute( $sql );
-		}
+    public function __construct()
+    {
+        $this->namespace = str_replace('/', '\\', self::$path['migration']);
+        if ( ! Schema::tableExists('migrations')) {
+            $sql = "CREATE TABLE ".Config::get('database.prefix')
+                .'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
+            Db::execute($sql);
+        }
+        if (empty(self::$batch)) {
+            self::$batch = Db::table('migrations')->max('batch') ?: 0;
+        }
+    }
 
-		if ( empty( self::$batch ) ) {
-			self::$batch = Db::table( 'migrations' )->max( 'batch' ) ?: 0;
-		}
-	}
+    //执行迁移
+    public function make()
+    {
+        $files = glob(self::$path['migration'].'/*.php');
+        sort($files);
+        foreach ((array)$files as $file) {
+            //只执行没有执行过的migration
+            if ( ! Db::table('migrations')->where('migration', basename($file))
+                ->first()
+            ) {
+                require $file;
+                preg_match('@\d{12}_(.+)\.php@', $file, $name);
+                $class = $this->namespace.'\\'.$name[1];
+                (new $class)->up();
+                Db::table('migrations')->insert(
+                    [
+                        'migration' => basename($file),
+                        'batch'     => self::$batch + 1,
+                    ]
+                );
+            }
+        }
+    }
 
-	//执行迁移
-	public function make() {
-		$files = glob( ROOT_PATH . '/system/database/migrations/*.php' );
-		sort( $files );
-		foreach ( (array) $files as $file ) {
-			$name = substr( basename( $file ), 0, -24);
-			//只执行没有执行过的migration
-			if ( ! Db::table( 'migrations' )->where( 'migration', basename($file) )->first() ) {
-				require $file;
-				$class = 'system\database\migrations\\' . $name;
-				( new $class )->up();
-				Db::table( 'migrations' )->insert( [ 'migration' => basename($file), 'batch' => self::$batch + 1 ] );
-			}
-		}
-	}
+    //回滚到上次迁移
+    public function rollback()
+    {
+        $batch = Db::table('migrations')->max('batch');
+        $files = Db::table('migrations')->where('batch', $batch)->lists(
+            'migration'
+        );
+        foreach ((array)$files as $f) {
+            $file = self::$path['migration'].'/'.$f;
+            if (is_file($file)) {
+                require $file;
+                $class = $this->namespace.'\\'.substr($f, 13, -4);
+                (new $class)->down();
+            }
+            Db::table('migrations')->where('migration', $f)->delete();
+        }
+    }
 
-	//回滚到上次迁移
-	public function rollback() {
-		$batch = Db::table( 'migrations' )->max( 'batch' );
-		$files = Db::table( 'migrations' )->where( 'batch', $batch )->lists( 'migration' );
-		foreach ( (array) $files as $f ) {
-			$file = ROOT_PATH . '/system/database/migrations/' . $f;
-			if ( is_file( $file ) ) {
-				require $file;
-				$class = 'system\database\migrations\\' . substr( basename( $file ), 0, - 24 );
-				( new $class )->down();
-			}
-			Db::table( 'migrations' )->where( 'migration', $f )->delete();
-		}
-	}
-
-	//迁移重置
-	public function reset() {
-		$files = Db::table( 'migrations' )->lists( 'migration' );
-		foreach ( (array) $files as $f ) {
-			$file = ROOT_PATH . '/system/database/migrations/' . $f . '.php';
-			if ( is_file( $file ) ) {
-				require $file;
-				$class = 'system\database\migrations\\' . substr( basename( $file ), 18, - 4 );
-				( new $class )->down();
-			}
-			Db::table( 'migrations' )->where( 'migration', $f )->delete();
-		}
-	}
+    //迁移重置
+    public function reset()
+    {
+        $files = Db::table('migrations')->lists('migration');
+        foreach ((array)$files as $f) {
+            $file = self::$path['migration'].'/'.$f;
+            if (is_file($file)) {
+                require $file;
+                $class = $this->namespace.'\\'.substr($f, 13, -4);
+                (new $class)->down();
+            }
+            Db::table('migrations')->where('migration', $f)->delete();
+        }
+    }
 }

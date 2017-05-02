@@ -1,7 +1,7 @@
-<?php namespace system\database\migrations;
+<?php namespace {{NAMESPACE}};
 use houdunwang\database\build\Migration;
 use houdunwang\database\build\Blueprint;
-
+use houdunwang\database\Schema;
 class {{className}} extends Migration {
     //执行
 	public function up() {

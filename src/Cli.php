@@ -11,22 +11,22 @@ use houdunwang\cli\build\Base;
  */
 class Cli
 {
-    protected $link;
+    protected static $link;
 
     protected function driver()
     {
-        $this->link = new Base();
+        self::$link = new Base();
 
         return $this;
     }
 
     public function __call($method, $params)
     {
-        if (is_null($this->link)) {
+        if (is_null(self::$link)) {
             $this->driver();
         }
 
-        return call_user_func_array([$this->link, $method], $params);
+        return call_user_func_array([self::$link, $method], $params);
     }
 
     public static function single()

@@ -1,4 +1,4 @@
-<?php namespace system\model;
+<?php namespace {{NAMESPACE}};
 use houdunwang\model\Model;
 class {{MODEL}} extends Model{
 	//数据表
