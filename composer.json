@@ -1,7 +1,6 @@
 {
   "name": "houdunwang/cli",
   "description": "命令行控制指令",
-  "type": "project",
   "keywords": [
     "houdunwang",
     "hdphp",
