@@ -16,14 +16,19 @@ use houdunwang\loader\Loader;
 
 class Make extends Base
 {
-    //创建控制器
+    /**
+     * 创建控制器
+     *
+     * @param        $arg
+     * @param string $type
+     */
     public function controller($arg, $type = 'controller')
     {
         $info       = explode('.', $arg);
         $MODULE     = $info[0];
         $CONTROLLER = ucfirst($info[1]);
         $file       = self::$path['controller'].'/'.$MODULE.'/controller/'
-            .ucfirst($CONTROLLER).'.php';;
+                      .ucfirst($CONTROLLER).'.php';;
         if ( ! Dir::create(dirname($file))) {
             $this->error("Directory to create failure");
         }
