@@ -11,9 +11,14 @@
 namespace houdunwang\cli\build\make;
 
 use houdunwang\cli\build\Base;
+use houdunwang\config\Config;
 use houdunwang\dir\Dir;
-use houdunwang\loader\Loader;
 
+/**
+ * Class Make
+ *
+ * @package houdunwang\cli\build\make
+ */
 class Make extends Base
 {
     /**
@@ -50,7 +55,11 @@ class Make extends Base
         $this->success('Controller creating successful');
     }
 
-    //创建模型
+    /**
+     * 创建模型
+     *
+     * @param $arg
+     */
     public function model($arg)
     {
         Dir::create(self::$path['model']);
@@ -73,7 +82,14 @@ class Make extends Base
         file_put_contents($file, $data);
     }
 
-    //创建数据迁移
+    /**
+     * 创建数据迁移
+     *
+     * @param $name
+     * @param $arg
+     *
+     * @return bool|int
+     */
     public function migration($name, $arg)
     {
         Dir::create(self::$path['migration']);
@@ -114,7 +130,13 @@ class Make extends Base
         }
     }
 
-    //创建数据迁移
+    /**
+     * 创建数据迁移
+     *
+     * @param $name
+     *
+     * @return bool|int
+     */
     public function seed($name)
     {
         Dir::create(self::$path['seed']);
@@ -144,7 +166,11 @@ class Make extends Base
         return file_put_contents($file, $data);
     }
 
-    //创建标签
+    /**
+     * 创建标签
+     *
+     * @param $name
+     */
     public function tag($name)
     {
         $file = self::$path['tag'].'/'.ucfirst($name).'.php';
@@ -157,7 +183,11 @@ class Make extends Base
         file_put_contents($file, $data);
     }
 
-    //创建中间件
+    /**
+     * 创建中间件
+     *
+     * @param $name
+     */
     public function middleware($name)
     {
         $file = self::$path['middleware'].'/'.ucfirst($name).'.php';
@@ -234,15 +264,16 @@ class Make extends Base
             $this->error('Files is Exists');
         }
         $content = file_get_contents(__DIR__.'/view/test.tpl');
-        $content = str_replace(
-            ['{{MODE}}', '{{NAME}}'],
-            [trim($type, '--'), $name],
-            $content
-        );
+        $content = str_replace(['{{MODE}}', '{{NAME}}'], [trim($type, '--'), $name], $content);
         file_put_contents($file, $content);
         $this->success('File is Create Success');
     }
 
+    /**
+     * 请求组件
+     *
+     * @param $name
+     */
     public function request($name)
     {
         $file = self::$path['request'].'/'.$name.'.php';
@@ -250,12 +281,44 @@ class Make extends Base
             $this->error('Files is Exists');
         }
         $content = file_get_contents(__DIR__.'/view/request.tpl');
-        $content = str_replace(
-            ['{{NAME}}'],
-            [$name],
-            $content
-        );
+        $content = str_replace(['{{NAME}}'], [$name], $content);
         file_put_contents($file, $content);
         $this->success('File is Create Success');
+    }
+
+    /**
+     * 创建HDJS上传使用的后台控制器
+     */
+    public function uploadController($class)
+    {
+        $sql
+            = <<<table
+CREATE TABLE `hd_attachment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL COMMENT '会员编号',
+  `name` varchar(80) NOT NULL,
+  `filename` varchar(300) NOT NULL COMMENT '文件名',
+  `path` varchar(300) NOT NULL COMMENT '文件路径',
+  `extension` varchar(10) NOT NULL DEFAULT '' COMMENT '文件类型',
+  `createtime` int(10) NOT NULL COMMENT '上传时间',
+  `size` mediumint(9) NOT NULL COMMENT '文件大小',
+  `data` varchar(100) NOT NULL DEFAULT '' COMMENT '辅助信息',
+  `status` tinyint(1) unsigned NOT NULL COMMENT '状态',
+  `content` text NOT NULL COMMENT '扩展数据内容',
+  PRIMARY KEY (`id`),
+  KEY `data` (`data`),
+  KEY `extension` (`extension`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='附件';
+table;
+        Db::execute($sql);
+        $info = explode('\\', $class);
+        array_pop($info);
+        $NAMESPACE = implode('\\', $info);
+        $classFile = str_replace('\\', '/', $class).'.php';
+        Dir::create(implode('/', $info));
+        $data = file_get_contents(__DIR__.'/view/upload.controller.tpl');
+        $data = str_replace('{{$NAMESPACE}}', $NAMESPACE, $data);
+        file_put_contents($classFile, $data);
     }
 }
