@@ -291,9 +291,10 @@ class Make extends Base
      */
     public function uploadController($class)
     {
-        $sql
-            = <<<table
-CREATE TABLE `hd_attachment` (
+        if ( ! Schema::tableExists('attachment')) {
+            $sql
+                = <<<table
+CREATE TABLE `attachment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL COMMENT '会员编号',
   `name` varchar(80) NOT NULL,
@@ -311,7 +312,8 @@ CREATE TABLE `hd_attachment` (
   KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='附件';
 table;
-        Db::execute($sql);
+            Db::execute($sql);
+        }
         $info = explode('\\', $class);
         array_pop($info);
         $NAMESPACE = implode('\\', $info);

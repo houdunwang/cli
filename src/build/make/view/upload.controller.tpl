@@ -37,9 +37,9 @@ class Upload extends Controller
             $data = array_merge($data, Request::post(), []);
             Db::table('attachment')->insert($data);
 
-            return $this->success($file[0]['path']);
+            return ['valid' => 1, 'message' => $file[0]['path']];
         } else {
-            return $this->error(File::getError());
+            return ['valid' => 0, 'message' => \File::getError()];
         }
     }
 
@@ -82,6 +82,6 @@ class Upload extends Controller
         }
         $db->where('id', $_POST['id'])->where('uid', v('user.info.uid'))->delete();
 
-        return $this->success('删除成功');
+        return ['valid' => 1, 'message' => '删除成功'];
     }
 }
