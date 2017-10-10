@@ -11,6 +11,8 @@ class Base
 {
     //绑定命令
     public $binds = [];
+    protected static $errorMessage = '';
+    //工作目录
     protected static $path
         = [
             'controller' => 'app/controller',
@@ -25,6 +27,23 @@ class Base
         ];
 
     /**
+     * 以脚本方式执行命令
+     *
+     * @param string $cli 命令
+     *
+     * @return mixed
+     */
+    public function call($cli)
+    {
+        $_SERVER['argv'] = preg_split('/\s+/', $cli);
+
+        //执行命令行指令
+        return $this->bootstrap();
+    }
+
+    /**
+     * 设置命令执行目录
+     *
      * @param array $path
      */
     public static function setPath($path)
@@ -34,6 +53,8 @@ class Base
 
     /**
      * 执行命令运行
+     *
+     * @return mixed|void
      */
     public function bootstrap()
     {
@@ -46,14 +67,14 @@ class Base
         } else {
             //系统命令类
             $class = 'houdunwang\cli\\build\\'.strtolower($info[0]).'\\'
-                .ucfirst($info[0]);
+                     .ucfirst($info[0]);
         }
         $action = isset($info[1]) ? $info[1] : 'run';
         //实例
         if (class_exists($class)) {
-            call_user_func_array([new $class(), $action], $_SERVER['argv']);
+            return call_user_func_array([new $class(), $action], $_SERVER['argv']);
         } else {
-            $this->error('Command does not exist');
+            return $this->error('Command does not exist');
         }
     }
 
@@ -65,10 +86,7 @@ class Base
     public function setBinds($binds)
     {
         //加载扩展命令处理类
-        $this->binds = array_merge(
-            $this->binds,
-            $binds
-        );
+        $this->binds = array_merge($this->binds, $binds);
     }
 
     /**
@@ -82,15 +100,51 @@ class Base
         $this->binds[$name] = $callback;
     }
 
-    //输出错误信息
+    /**
+     * 输出错误信息
+     *
+     * @param $content
+     *
+     * @return bool
+     */
     final public function error($content)
     {
-        die(PHP_EOL."\033[;41m $content \x1B[0m\n".PHP_EOL);
+        if (RUN_MODE == 'CLI') {
+            die(PHP_EOL."\033[;41m $content \x1B[0m\n".PHP_EOL);
+        }
+        $this->setError($content);
+
+        return false;
     }
 
-    //成功信息
+    /**
+     * 成功信息
+     *
+     * @param $content
+     *
+     * @return bool
+     */
     final public function success($content)
     {
-        die(PHP_EOL."\033[;36m $content \x1B[0m".PHP_EOL);
+        if (RUN_MODE == 'CLI') {
+            die(PHP_EOL."\033[;36m $content \x1B[0m".PHP_EOL);
+        }
+
+        return true;
+    }
+
+    public function setError($content)
+    {
+        self::$errorMessage = $content;
+    }
+
+    /**
+     * 获取执行错误
+     *
+     * @return string
+     */
+    public function getError()
+    {
+        return self::$errorMessage;
     }
 }

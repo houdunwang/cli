@@ -18,6 +18,7 @@ use houdunwang\db\Db;
 class Migrate extends Base
 {
     protected $namespace;
+
     //当前执行的数据库中的编号
     protected static $batch;
 
@@ -26,7 +27,7 @@ class Migrate extends Base
         $this->namespace = str_replace('/', '\\', self::$path['migration']);
         if ( ! Schema::tableExists('migrations')) {
             $sql = "CREATE TABLE ".Config::get('database.prefix')
-                .'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
+                   .'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
             Db::execute($sql);
         }
         if (empty(self::$batch)) {
@@ -34,37 +35,48 @@ class Migrate extends Base
         }
     }
 
-    //执行迁移
+    /**
+     * 执行迁移
+     *
+     * @return bool
+     */
+    public function run()
+    {
+        return $this->make();
+    }
+
+    /**
+     * 执行迁移
+     *
+     * @return bool
+     */
     public function make()
     {
         $files = glob(self::$path['migration'].'/*.php');
         sort($files);
         foreach ((array)$files as $file) {
             //只执行没有执行过的migration
-            if ( ! Db::table('migrations')->where('migration', basename($file))
-                ->first()
-            ) {
+            if ( ! Db::table('migrations')->where('migration', basename($file))->first()) {
                 require $file;
                 preg_match('@\d{12}_(.+)\.php@', $file, $name);
                 $class = $this->namespace.'\\'.$name[1];
                 (new $class)->up();
-                Db::table('migrations')->insert(
-                    [
-                        'migration' => basename($file),
-                        'batch'     => self::$batch + 1,
-                    ]
-                );
+                Db::table('migrations')->insert(['migration' => basename($file), 'batch' => self::$batch + 1,]);
             }
         }
+
+        return true;
     }
 
-    //回滚到上次迁移
+    /**
+     * 回滚到上次迁移
+     *
+     * @return bool
+     */
     public function rollback()
     {
         $batch = Db::table('migrations')->max('batch');
-        $files = Db::table('migrations')->where('batch', $batch)->lists(
-            'migration'
-        );
+        $files = Db::table('migrations')->where('batch', $batch)->lists('migration');
         foreach ((array)$files as $f) {
             $file = self::$path['migration'].'/'.$f;
             if (is_file($file)) {
@@ -74,9 +86,15 @@ class Migrate extends Base
             }
             Db::table('migrations')->where('migration', $f)->delete();
         }
+
+        return true;
     }
 
-    //迁移重置
+    /**
+     * 迁移重置
+     *
+     * @return bool
+     */
     public function reset()
     {
         $files = Db::table('migrations')->lists('migration');
@@ -89,5 +107,7 @@ class Migrate extends Base
             }
             Db::table('migrations')->where('migration', $f)->delete();
         }
+
+        return true;
     }
 }
