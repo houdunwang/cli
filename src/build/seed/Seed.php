@@ -11,6 +11,7 @@
 namespace houdunwang\cli\build\seed;
 
 use houdunwang\cli\build\Base;
+use houdunwang\config\Config;
 use houdunwang\database\Schema;
 use houdunwang\db\Db;
 
@@ -24,7 +25,7 @@ class Seed extends Base
         $this->namespace = str_replace('/', '\\', self::$path['seed']);
         //创建migration表用于记录动作
         if ( ! Schema::tableExists('seeds')) {
-            $sql = "CREATE TABLE ".c('database.prefix')
+            $sql = "CREATE TABLE ".Config::get('database.prefix')
                    .'seeds(seed varchar(255) not null,batch int)CHARSET UTF8';
             Db::execute($sql);
         }
