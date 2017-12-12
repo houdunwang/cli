@@ -26,5 +26,5 @@ class {{MODEL}} extends Model{
     ];
 
 	//时间操作,需要表中存在created_at,updated_at字段
-	protected $timestamps=false;
+	protected $timestamps=true;
 }

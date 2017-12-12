@@ -88,12 +88,12 @@ class Make extends Base
         Dir::create(self::$path['migration']);
         $info = explode('=', $arg);
         //检查数据迁移文件是否已经存在
-        $files = glob(self::$path['migration'].'/*.php');
-        foreach ((array)$files as $file) {
-            if (stristr($file, $name)) {
-                return $this->error('File already exists');
-            }
-        }
+//        $files = glob(self::$path['migration'].'/*.php');
+//        foreach ((array)$files as $file) {
+//            if (stristr($file, $name.'.php')) {
+//                return $this->error('File already exists');
+//            }
+//        }
         $file = self::$path['migration'].'/'.date('ymdHis').'_'.$name.'.php';
         //命名空间
         $namespace = str_replace('/', '\\', self::$path['migration']);
