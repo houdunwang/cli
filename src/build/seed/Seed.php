@@ -25,8 +25,8 @@ class Seed extends Base
         $this->namespace = str_replace('/', '\\', self::$path['seed']);
         //创建migration表用于记录动作
         if ( ! Schema::tableExists('seeds')) {
-            $sql = "CREATE TABLE ".Config::get('database.prefix')
-                   .'seeds(seed varchar(255) not null,batch int)CHARSET UTF8';
+            $sql = "CREATE TABLE " . Config::get('database.prefix')
+                   . 'seeds(seed varchar(255) not null,batch int)CHARSET UTF8';
             Db::execute($sql);
         }
         if (empty(self::$batch)) {
@@ -41,20 +41,24 @@ class Seed extends Base
      */
     public function make()
     {
-        $files = glob(self::$path['seed'].'/*.php');
+        $files = glob(self::$path['seed'] . '/*.php');
         sort($files);
         foreach ((array)$files as $file) {
             //只执行没有执行过的migration
             if ( ! Db::table('seeds')->where('seed', basename($file))->first()) {
-                require $file;
-                preg_match('@\d{12}_(.+)\.php@', $file, $name);
-                $class = $this->namespace.'\\'.$name[1];
+                $info  = pathinfo($file);
+                $class = $this->namespace . '\\' . $info['filename'];
                 (new $class)->up();
-                Db::table('seeds')->insert(['seed' => basename($file), 'batch' => self::$batch + 1]);
+                Db::table('seeds')->insert(
+                    [
+                        'seed'  => basename($file),
+                        'batch' => self::$batch + 1,
+                    ]);
             }
         }
-
-        return true;
+        if (defined('RUN_MODE') && RUN_MODE != 'CLI') {
+            return true;
+        }
     }
 
     /**
@@ -66,16 +70,17 @@ class Seed extends Base
     {
         $files = Db::table('seeds')->lists('seed');
         foreach ((array)$files as $f) {
-            $file = self::$path['seed'].'/'.$f;
+            $file = self::$path['seed'] . '/' . $f;
             if (is_file($file)) {
-                require $file;
-                $class = $this->namespace.'\\'.substr($f, 13, -4);
+                $info  = pathinfo($file);
+                $class = $this->namespace . '\\' . $info['filename'];
                 (new $class)->down();
             }
             Db::table('seeds')->where('seed', $f)->delete();
         }
-
-        return true;
+        if (defined('RUN_MODE') && RUN_MODE != 'CLI') {
+            return true;
+        }
     }
 
     /**
@@ -88,15 +93,16 @@ class Seed extends Base
         $batch = Db::table('seeds')->max('batch');
         $files = Db::table('seeds')->where('batch', $batch)->lists('seed');
         foreach ((array)$files as $f) {
-            $file = self::$path['seed'].'/'.$f;
+            $file = self::$path['seed'] . '/' . $f;
             if (is_file($file)) {
-                require $file;
-                $class = $this->namespace.'\\'.substr($f, 13, -4);
+                $info  = pathinfo($file);
+                $class = $this->namespace . '\\' . $info['filename'];
                 (new $class)->down();
             }
             Db::table('seeds')->where('seed', $f)->delete();
         }
-
-        return true;
+        if (defined('RUN_MODE') && RUN_MODE != 'CLI') {
+            return true;
+        }
     }
 }

@@ -34,8 +34,8 @@ class Make extends Base
         $info       = explode('.', $arg);
         $MODULE     = $info[0];
         $CONTROLLER = ucfirst($info[1]);
-        $file       = self::$path['controller'].'/'.$MODULE.'/controller/'
-                      .ucfirst($CONTROLLER).'.php';;
+        $file       = self::$path['controller'] . '/' . $MODULE . '/controller/'
+                      . ucfirst($CONTROLLER) . '.php';;
         if ( ! Dir::create(dirname($file))) {
             return $this->error("Directory to create failure");
         }
@@ -43,8 +43,9 @@ class Make extends Base
         if (is_file($file)) {
             return $this->error('Controller file already exists');
         }
-        $data = file_get_contents(__DIR__.'/view/'.strtolower($type).'.tpl');
-        $data = str_replace(['{{APP}}', '{{MODULE}}', '{{CONTROLLER}}'], [Config::get('app.path'), $MODULE, $CONTROLLER,], $data);
+        $data = file_get_contents(__DIR__ . '/view/' . strtolower($type) . '.tpl');
+        $data = str_replace(['{{APP}}', '{{MODULE}}', '{{CONTROLLER}}'],
+            [Config::get('app.path'), $MODULE, $CONTROLLER,], $data);
 
         return file_put_contents($file, $data);
     }
@@ -64,13 +65,14 @@ class Make extends Base
         $info      = explode('.', $arg);
         $MODEL     = ucfirst($info[0]);
         $TABLE     = strtolower($info[0]);
-        $file      = self::$path['model'].'/'.ucfirst($MODEL).'.php';
+        $file      = self::$path['model'] . '/' . ucfirst($MODEL) . '.php';
         //创建模型文件
         if (is_file($file)) {
             return $this->error("Model file already exists");
         }
-        $data = file_get_contents(__DIR__.'/view/model.tpl');
-        $data = str_replace(['{{NAMESPACE}}', '{{MODEL}}', '{{TABLE}}'], [$namespace, $MODEL, $TABLE], $data);
+        $data = file_get_contents(__DIR__ . '/view/model.tpl');
+        $data = str_replace(['{{NAMESPACE}}', '{{MODEL}}', '{{TABLE}}'],
+            [$namespace, $MODEL, $TABLE], $data);
 
         return file_put_contents($file, $data);
     }
@@ -87,28 +89,24 @@ class Make extends Base
     {
         Dir::create(self::$path['migration']);
         $info = explode('=', $arg);
-        //检查数据迁移文件是否已经存在
-//        $files = glob(self::$path['migration'].'/*.php');
-//        foreach ((array)$files as $file) {
-//            if (stristr($file, $name.'.php')) {
-//                return $this->error('File already exists');
-//            }
-//        }
-        $file = self::$path['migration'].'/'.date('ymdHis').'_'.$name.'.php';
+        $name = 'hd' . date('ymdHis') . '_' . $name;
+        $file = self::$path['migration'] . '/' . $name . '.php';
         //命名空间
         $namespace = str_replace('/', '\\', self::$path['migration']);
         //新增表
         if ($info[0] == '--create') {
             //创建模型文件
-            $data = file_get_contents(__DIR__.'/view/migration.create.tpl');
-            $data = str_replace(['{{NAMESPACE}}', '{{TABLE}}', '{{className}}'], [$namespace, $info[1], $name], $data);
+            $data = file_get_contents(__DIR__ . '/view/migration.create.tpl');
+            $data = str_replace(['{{NAMESPACE}}', '{{TABLE}}', '{{className}}'],
+                [$namespace, $info[1], $name], $data);
 
             return file_put_contents($file, $data);
         }
         //修改表
         if ($info[0] == '--table') {
-            $data = file_get_contents(__DIR__.'/view/migration.table.tpl');
-            $data = str_replace(['{{NAMESPACE}}', '{{TABLE}}', '{{className}}'], [$namespace, $info[1], $name], $data);
+            $data = file_get_contents(__DIR__ . '/view/migration.table.tpl');
+            $data = str_replace(['{{NAMESPACE}}', '{{TABLE}}', '{{className}}'],
+                [$namespace, $info[1], $name], $data);
 
             return file_put_contents($file, $data);
         }
@@ -125,7 +123,7 @@ class Make extends Base
     {
         Dir::create(self::$path['seed']);
         //检测文件是否存在,也检测类名
-        $files = glob(self::$path['seed'].'/*.php');
+        $files = glob(self::$path['seed'] . '/*.php');
         //命名空间
         $namespace = str_replace('/', '\\', self::$path['seed']);
         foreach ((array)$files as $file) {
@@ -137,10 +135,10 @@ class Make extends Base
                 return $this->error('File already exists');
             }
         }
-
-        $file = self::$path['seed'].'/'.date('ymdHis').'_'.$name.'.php';
+        $name = 'hd' . date('ymdHis') . '_' . $name;
+        $file = self::$path['seed'] . '/' . $name . '.php';
         //创建文件
-        $data = file_get_contents(__DIR__.'/view/seeder.tpl');
+        $data = file_get_contents(__DIR__ . '/view/seeder.tpl');
         $data = str_replace(
             ['{{NAMESPACE}}', '{{className}}'],
             [$namespace, $name],
@@ -159,12 +157,12 @@ class Make extends Base
      */
     public function tag($name)
     {
-        $file = self::$path['tag'].'/'.ucfirst($name).'.php';
+        $file = self::$path['tag'] . '/' . ucfirst($name) . '.php';
         if (is_file($file)) {
             return $this->error('File already exists');
         }
         //创建文件
-        $data = file_get_contents(__DIR__.'/view/tag.tpl');
+        $data = file_get_contents(__DIR__ . '/view/tag.tpl');
         $data = str_replace(['{{NAME}}'], [ucfirst($name)], $data);
         file_put_contents($file, $data);
     }
@@ -178,12 +176,12 @@ class Make extends Base
      */
     public function middleware($name)
     {
-        $file = self::$path['middleware'].'/'.ucfirst($name).'.php';
+        $file = self::$path['middleware'] . '/' . ucfirst($name) . '.php';
         if (is_file($file)) {
             return $this->error('File already exists');
         }
         //创建文件
-        $data = file_get_contents(__DIR__.'/view/middleware.tpl');
+        $data = file_get_contents(__DIR__ . '/view/middleware.tpl');
         $data = str_replace(['{{NAME}}'], [ucfirst($name)], $data);
         file_put_contents($file, $data);
     }
@@ -195,7 +193,7 @@ class Make extends Base
      */
     public function key()
     {
-        $key     = md5(mt_rand(1, 99999).time()).md5(mt_rand(1, 99999).time());
+        $key     = md5(mt_rand(1, 99999) . time()) . md5(mt_rand(1, 99999) . time());
         $content = file_get_contents('system/config/app.php');
         $content = preg_replace(
             '/(.*("|\')\s*key\s*\2\s*=>\s*)(.*)/im',
@@ -217,22 +215,22 @@ class Make extends Base
     {
         $name  = ucfirst($name);
         $files = [
-            __DIR__.'/view/service/HdForm.tpl',
-            __DIR__.'/view/service/HdFormFacade.tpl',
-            __DIR__.'/view/service/HdFormProvider.tpl',
+            __DIR__ . '/view/service/HdForm.tpl',
+            __DIR__ . '/view/service/HdFormFacade.tpl',
+            __DIR__ . '/view/service/HdFormProvider.tpl',
         ];
         //创建目录
-        $dir = strtolower(self::$path['service'].'/'.$name);
+        $dir = strtolower(self::$path['service'] . '/' . $name);
         Dir::create($dir);
         foreach ($files as $f) {
             $content = str_replace('{{LOWER_NAME}}', strtolower($name), file_get_contents($f));
             $content = str_replace('{{NAME}}', $name, $content);
             if (strpos($f, 'Facade') !== false) {
-                return file_put_contents($dir."/{$name}Facade.php", $content);
-            } else if (strpos($f, 'Provider') !== false) {
-                return file_put_contents($dir."/{$name}Provider.php", $content);
+                return file_put_contents($dir . "/{$name}Facade.php", $content);
+            } elseif (strpos($f, 'Provider') !== false) {
+                return file_put_contents($dir . "/{$name}Provider.php", $content);
             } else {
-                return file_put_contents($dir."/{$name}.php", $content);
+                return file_put_contents($dir . "/{$name}.php", $content);
             }
         }
     }
@@ -249,10 +247,10 @@ class Make extends Base
     {
         switch ($type) {
             case '--feature':
-                $file = self::$path['test'].'/feature/'.$name.'.php';
+                $file = self::$path['test'] . '/feature/' . $name . '.php';
                 break;
             case '--unit':
-                $file = self::$path['test'].'/unit/'.$name.'.php';
+                $file = self::$path['test'] . '/unit/' . $name . '.php';
                 break;
             default:
                 return $this->error('params is wrong');
@@ -260,7 +258,7 @@ class Make extends Base
         if (is_file($file)) {
             return $this->error('Files is Exists');
         }
-        $content = file_get_contents(__DIR__.'/view/test.tpl');
+        $content = file_get_contents(__DIR__ . '/view/test.tpl');
         $content = str_replace(['{{MODE}}', '{{NAME}}'], [trim($type, '--'), $name], $content);
         file_put_contents($file, $content);
 
@@ -276,11 +274,11 @@ class Make extends Base
      */
     public function request($name)
     {
-        $file = self::$path['request'].'/'.$name.'.php';
+        $file = self::$path['request'] . '/' . $name . '.php';
         if (is_file($file)) {
             return $this->error('Files is Exists');
         }
-        $content = file_get_contents(__DIR__.'/view/request.tpl');
+        $content = file_get_contents(__DIR__ . '/view/request.tpl');
         $content = str_replace(['{{NAME}}'], [$name], $content);
         file_put_contents($file, $content);
 
@@ -320,9 +318,9 @@ table;
         $info = explode('\\', $class);
         array_pop($info);
         $NAMESPACE = implode('\\', $info);
-        $classFile = str_replace('\\', '/', $class).'.php';
+        $classFile = str_replace('\\', '/', $class) . '.php';
         Dir::create(implode('/', $info));
-        $data = file_get_contents(__DIR__.'/view/upload.controller.tpl');
+        $data = file_get_contents(__DIR__ . '/view/upload.controller.tpl');
         $data = str_replace('{{$NAMESPACE}}', $NAMESPACE, $data);
         file_put_contents($classFile, $data);
     }
