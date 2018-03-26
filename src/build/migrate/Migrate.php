@@ -26,8 +26,8 @@ class Migrate extends Base
     {
         $this->namespace = str_replace('/', '\\', self::$path['migration']);
         if ( ! Schema::tableExists('migrations')) {
-            $sql = "CREATE TABLE " . Config::get('database.prefix')
-                   . 'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
+            $sql = "CREATE TABLE ".Config::get('database.prefix')
+                   .'migrations(migration varchar(255) not null,batch int)CHARSET UTF8';
             Db::execute($sql);
         }
         if (empty(self::$batch)) {
@@ -52,18 +52,22 @@ class Migrate extends Base
      */
     public function make()
     {
-        $files = glob(self::$path['migration'] . '/*.php');
+        $files = glob(self::$path['migration'].'/*.php');
         sort($files);
         foreach ((array)$files as $file) {
             //只执行没有执行过的migration
             if ( ! Db::table('migrations')->where('migration', basename($file))->first()) {
                 $info  = pathinfo($file);
-                $class = $this->namespace . '\\' . $info['filename'];
-                (new $class)->up();
-                Db::table('migrations')->insert([
-                    'migration' => basename($file),
-                    'batch'     => self::$batch + 1,
-                ]);
+                $class = $this->namespace.'\\'.$info['filename'];
+                if (class_exists($class)) {
+                    (new $class)->up();
+                    Db::table('migrations')->insert(
+                        [
+                            'migration' => basename($file),
+                            'batch'     => self::$batch + 1,
+                        ]
+                    );
+                }
             }
         }
         if (defined('RUN_MODE') && RUN_MODE != 'CLI') {
@@ -81,10 +85,10 @@ class Migrate extends Base
         $batch = Db::table('migrations')->max('batch');
         $files = Db::table('migrations')->where('batch', $batch)->lists('migration');
         foreach ((array)$files as $f) {
-            $file = self::$path['migration'] . '/' . $f;
+            $file = self::$path['migration'].'/'.$f;
             if (is_file($file)) {
                 $info  = pathinfo($file);
-                $class = $this->namespace . '\\' . $info['filename'];
+                $class = $this->namespace.'\\'.$info['filename'];
                 (new $class)->down();
             }
             Db::table('migrations')->where('migration', $f)->delete();
@@ -103,10 +107,10 @@ class Migrate extends Base
     {
         $files = Db::table('migrations')->lists('migration');
         foreach ((array)$files as $f) {
-            $file = self::$path['migration'] . '/' . $f;
+            $file = self::$path['migration'].'/'.$f;
             if (is_file($file)) {
                 $info  = pathinfo($file);
-                $class = $this->namespace . '\\' . $info['filename'];
+                $class = $this->namespace.'\\'.$info['filename'];
                 (new $class)->down();
             }
             Db::table('migrations')->where('migration', $f)->delete();
